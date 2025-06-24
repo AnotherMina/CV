@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CV - Wilhelmina Zoe Statham</title>
+    <!-- Chosen Palette: Academic Calm (#F8F7F4, #333333, #4A6C6F, #DAB88B) -->
+    <!-- Application Structure Plan: A single-page dashboard design with sticky navigation for non-linear exploration. The structure is thematic, grouping content into 'Pedagogical Leadership', 'Research & Innovation', and 'Teaching Experience' to highlight the user's pivot to Educational Sciences. A visual career timeline synthesizes the professional journey, while interactive charts and filters allow deep-dives into research output. This structure was chosen to tell a compelling narrative of professional evolution, prioritizing user engagement and clarity over a traditional linear CV format. -->
+    <!-- Visualization & Content Choices:
+        - Hero Section: Inform -> Static Text -> Clear initial positioning.
+        - Dynamic Stats (Years, Publications, etc.): Inform/Engage -> JS Counter Animation -> Provides a quick, impactful summary of achievements.
+        - Research Publications: Explore/Compare -> Filterable List (JS) + Interactive Timeline (Chart.js) -> Allows users to see both the breadth of research and the specific pivot towards AI/Education over time. Timeline uses a scatter plot for visual clarity.
+        - Career Trajectory: Organize/Inform -> Interactive Vertical Timeline (HTML/CSS/JS) -> Visually represents the pivot from industry to senior academic. More engaging than a list.
+        - Skills: Inform -> Tag Cloud/Grid (HTML/CSS Flexbox) -> Modern visual presentation of core competencies.
+        - Library/Method: Vanilla JS for DOM manipulation and filtering, Chart.js for the timeline visualization. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #333333;
+        }
+        .accent-bg { background-color: #4A6C6F; }
+        .accent-text { color: #4A6C6F; }
+        .secondary-accent-bg { background-color: #DAB88B; }
+        .secondary-accent-text { color: #DAB88B; }
+        .active-nav {
+            color: #4A6C6F;
+            font-weight: 500;
+            position: relative;
+        }
+        .active-nav::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #4A6C6F;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: -21px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #DAB88B;
+            border: 2px solid #F8F7F4;
+            z-index: 1;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold accent-text">Wilhelmina Zoe Statham</h1>
+                </div>
+                <nav class="hidden md:block">
+                    <ul class="flex items-center space-x-8 text-sm font-medium text-gray-600">
+                        <li><a href="#profile" class="hover:accent-text transition-colors">Profile</a></li>
+                        <li><a href="#experience" class="hover:accent-text transition-colors">Experience</a></li>
+                        <li><a href="#research" class="hover:accent-text transition-colors">Research</a></li>
+                        <li><a href="#skills" class="hover:accent-text transition-colors">Skills</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Profile Section -->
+        <section id="profile" class="mb-24 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-2">Senior Lecturer and Researcher</h2>
+            <p class="text-lg md:text-xl accent-text font-medium mb-6">Educational Technology | TEE, UDL, Inclusive Pedagogy | AI in Education</p>
+            <p class="max-w-4xl mx-auto text-gray-700 leading-relaxed mb-8">
+                I am a Senior Lecturer with nearly 15 years of experience in higher education. My pedagogical philosophy centers on inclusive, student-centered, and technology-enhanced learning, with particular attention to supporting neurodivergent students. My core interests include Universal Design for Learning (UDL), educational technology, Technology-Enhanced Education (TEE), and inclusive pedagogy. Guided by Scholarship of Teaching and Learning (SoTL) principles, I lead initiatives focused on meaningful assessment, the use of AI in education, and the design of accessible, equitable, and engaging learning environments.
+            </p>
+            <div class="flex justify-center space-x-4">
+                 <a href="mailto:stathamwilhelmina@gmail.com" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors">Email</a>
+                 <a href="https://www.linkedin.com/in/wilhelmina-statham/" target="_blank" class="accent-bg hover:opacity-90 text-white font-medium py-2 px-4 rounded-full transition-colors">LinkedIn</a>
+                 <a href="https://orcid.org/0000-0001-9463-1353" target="_blank" class="secondary-accent-bg hover:opacity-90 text-white font-medium py-2 px-4 rounded-full transition-colors">ORCID</a>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats" class="mb-24">
+             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center max-w-5xl mx-auto">
+                <div>
+                    <p class="text-4xl font-bold accent-text" data-stat-target="15">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Years in Higher Education</p>
+                </div>
+                <div>
+                    <p class="text-4xl font-bold accent-text" data-stat-target="14">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Peer-Reviewed Outputs</p>
+                </div>
+                 <div>
+                    <p class="text-4xl font-bold accent-text" data-stat-target="100">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Colleagues Trained in AI</p>
+                </div>
+                <div>
+                    <p class="text-4xl font-bold accent-text" data-stat-target="2">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Funded PhD Projects</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Experience Section -->
+        <section id="experience" class="mb-24">
+            <h2 class="text-3xl font-bold text-center mb-12">Career Trajectory</h2>
+            <div id="timeline-container" class="relative max-w-3xl mx-auto border-l-2 border-gray-200 pl-8">
+                <!-- Timeline items will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- Research Section -->
+        <section id="research" class="mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4">Research & Publications</h2>
+             <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">A selection of peer-reviewed and non-peer-reviewed outputs. The chart below visualizes the thematic focus of my work over time, highlighting the pivot towards education-focused research.</p>
+
+            <div class="chart-container mb-12">
+                <canvas id="researchChart"></canvas>
+            </div>
+
+            <div class="flex justify-center space-x-2 mb-8" id="filter-buttons">
+                <button class="filter-btn active bg-gray-700 text-white py-2 px-4 rounded-full text-sm" data-filter="all">All</button>
+                <button class="filter-btn bg-white text-gray-700 py-2 px-4 rounded-full text-sm" data-filter="journal">Journal Articles</button>
+                <button class="filter-btn bg-white text-gray-700 py-2 px-4 rounded-full text-sm" data-filter="conference">Conference Papers</button>
+                <button class="filter-btn bg-white text-gray-700 py-2 px-4 rounded-full text-sm" data-filter="workshop">Workshops & Presentations</button>
+            </div>
+            <div id="publications-container" class="space-y-4 max-w-4xl mx-auto">
+                <!-- Publications will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-12">Core Competencies & Skills</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Competency Cards -->
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-lg mb-2 accent-text">Inclusive & Technology-Enhanced Learning</h3>
+                    <p class="text-sm text-gray-600">Expertise in Universal Design for Learning (UDL) and TEE, actively applied to create equitable and empowering learning environments.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-lg mb-2 accent-text">Instructional Design & Pedagogy</h3>
+                    <p class="text-sm text-gray-600">Proven expertise in instructional design and pedagogical scaffolding, translating complex concepts into accessible, learner-centered experiences.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-lg mb-2 accent-text">Technology Integration & Innovation</h3>
+                    <p class="text-sm text-gray-600">Track record of early adoption and innovative integration of emerging technologies, including generative AI, to enhance learning.</p>
+                </div>
+            </div>
+             <div class="mt-12">
+                <h3 class="text-xl font-bold text-center mb-6">Software Proficiency for Educational Innovation</h3>
+                <div class="max-w-5xl mx-auto space-y-4 text-center">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">AI & Research Tools</h4>
+                        <div class="flex flex-wrap justify-center gap-2 text-sm">
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Gemini</span>
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">ChatGPT</span>
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Copilot</span>
+                             <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Consensus</span>
+                             <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">SciSpace</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Immersive & Interactive Content</h4>
+                         <div class="flex flex-wrap justify-center gap-2 text-sm">
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Unreal Engine</span>
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Unity</span>
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Blender</span>
+                             <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">RealityCapture</span>
+                        </div>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Educational Technology & Design</h4>
+                         <div class="flex flex-wrap justify-center gap-2 text-sm">
+                             <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Canvas LMS</span>
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Moodle</span>
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">Adobe Creative Suite</span>
+                             <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full">WordPress</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white text-center p-4">
+        <p>&copy; 2025 Wilhelmina Zoe Statham. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- DATA ---
+            const experienceData = [
+                {
+                    date: "March 2025 - Present",
+                    role: "Senior Lecturer in Game Design",
+                    institution: "Uppsala University, Sweden",
+                    description: "Leading strategic pedagogical initiatives, spearheading curriculum innovation, and conducting research at the forefront of educational technology, inclusive learning, and the responsible integration of AI. My work is fundamentally geared towards cultivating a dynamic, accessible, and highly student-centric learning environment that fosters future-ready skills."
+                },
+                {
+                    date: "Aug 2011 - Feb 2025",
+                    role: "Adjunct Lecturer in Visual Communication & 3D Graphics",
+                    institution: "Uppsala University, Sweden",
+                    description: "Designed and delivered innovative courses, supervised over 50 Bachelor's degree projects, and contributed significantly to curriculum development, with a growing focus on the intersection of technology, pedagogy, and inclusive learning. Led multiple pedagogical taskforces, including on the use of AI in education."
+                },
+                {
+                    date: "2009 - 2011",
+                    role: "Producer & Lead Animator",
+                    institution: "Imagination Studios, Sweden",
+                    description: "Coordinated development projects and managed client relations for a 3D animation and Motion Capture studio. Established quality standards and ensured timely project completion. Contributed to titles like Battlefield: Bad Company 2 and Alan Wake."
+                },
+                {
+                    date: "2004 - 2008",
+                    role: "Character Modeler & Senior Animator",
+                    institution: "Bohemia Interactive (CZ) & Emerging Entertainment (SG)",
+                    description: "Modeled, rigged, and animated game characters, utilizing laser scanning and motion capture technologies. Set the visual tone of game animations. Contributed to titles such as ArmA: Armed Assault and Mirror's Edge."
+                }
+            ];
+
+            const publicationsData = [
+                { year: 2025, title: 'Facilitating faculty engagement with AI: Practical insights from the frontline of higher education.', citation: 'INTED2025 Proceedings', type: 'conference', theme: 'AI in Education' },
+                { year: 2025, title: 'Lessons from a decade of motion capture in higher education: Reflections and strategies for creative and interdisciplinary media.', citation: 'INTED2025 Proceedings', type: 'conference', theme: 'TEE' },
+                { year: 2025, title: 'AI-enhanced Supervision.', citation: 'Uppsala University', type: 'workshop', theme: 'AI in Education' },
+                { year: 2025, title: 'AI-enhanced Research and Academic Writing.', citation: 'Uppsala University', type: 'workshop', theme: 'AI in Education' },
+                { year: 2024, title: 'Leveraging AI for Research, Academic Writing, and Assessment.', citation: 'Dalarna University', type: 'workshop', theme: 'AI in Education' },
+                { year: 2024, title: 'Assessment in the Age of AI.', citation: 'Uppsala University, Campus Gotland', type: 'workshop', theme: 'AI in Education' },
+                { year: 2024, title: 'AI, Supervision, and Thesis Writing.', citation: 'Uppsala University', type: 'workshop', theme: 'AI in Education' },
+                { year: 2024, title: 'Introduction to AI.', citation: 'Uppsala University', type: 'workshop', theme: 'AI in Education' },
+                { year: 2022, title: 'Game environment art with modular architecture.', citation: 'Entertainment Computing', type: 'journal', theme: 'Game Tech' },
+                { year: 2021, title: 'Recreating a transmedia architectural location in-game via modular environment assets.', citation: 'ICEC 2021', type: 'conference', theme: 'Game Tech' },
+                { year: 2020, title: 'Use of photogrammetry in video games: A historical overview.', citation: 'Games and Culture', type: 'journal', theme: 'Game Tech' },
+                { year: 2020, title: 'Photogrammetry for game environments 2014–2019: What happened since The Vanishing of Ethan Carter.', citation: 'DiGRA 2020', type: 'conference', theme: 'Game Tech' },
+                { year: 2019, title: 'Scientific rigour of online platforms for 3D visualization of heritage.', citation: 'Virtual Archaeology Review', type: 'journal', theme: 'Heritage Tech' },
+                { year: 2017, title: 'The benefits of formative assessment.', citation: 'Game Educators Summit 2017', type: 'workshop', theme: 'TEE' },
+                { year: 2014, title: 'Motion capture in game education: Study of Uppsala University’s department.', citation: 'NICOGRAPH International 2014', type: 'workshop', theme: 'TEE' },
+            ];
+            
+            // --- DYNAMIC CONTENT RENDERING ---
+
+            // Render Timeline
+            const timelineContainer = document.getElementById('timeline-container');
+            experienceData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'timeline-item relative mb-8';
+                div.innerHTML = `
+                    <p class="text-sm font-semibold secondary-accent-text">${item.date}</p>
+                    <h3 class="text-xl font-bold mt-1">${item.role}</h3>
+                    <p class="font-medium text-gray-700">${item.institution}</p>
+                    <p class="text-sm text-gray-600 mt-2">${item.description}</p>
+                `;
+                timelineContainer.appendChild(div);
+            });
+            
+            // Render Publications
+            const publicationsContainer = document.getElementById('publications-container');
+            const renderPublications = (filter) => {
+                publicationsContainer.innerHTML = '';
+                const filteredData = filter === 'all' ? publicationsData : publicationsData.filter(p => p.type === filter);
+                
+                filteredData.forEach(pub => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-white p-4 rounded-lg shadow-sm';
+                    div.innerHTML = `
+                        <p class="font-semibold text-gray-800">${pub.title}</p>
+                        <p class="text-sm text-gray-600 mt-1">${pub.citation} (${pub.year})</p>
+                    `;
+                    publicationsContainer.appendChild(div);
+                });
+            };
+
+            // Initial render
+            renderPublications('all');
+
+            // --- EVENT LISTENERS ---
+
+            // Publication Filter Buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-gray-700', 'text-white');
+                        btn.classList.add('bg-white', 'text-gray-700');
+                    });
+                    button.classList.add('active', 'bg-gray-700', 'text-white');
+                    button.classList.remove('bg-white', 'text-gray-700');
+                    
+                    renderPublications(button.dataset.filter);
+                });
+            });
+
+            // Navigation Active State on Scroll
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (window.pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active-nav');
+                    }
+                });
+            });
+
+            // Animated Stats Counter
+            const statsObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const statElement = entry.target;
+                        const target = +statElement.dataset.statTarget;
+                        let count = 0;
+                        const duration = 2000;
+                        const stepTime = Math.abs(Math.floor(duration / target));
+
+                        const timer = setInterval(() => {
+                            count++;
+                            statElement.textContent = count;
+                            if (count === target) {
+                                clearInterval(timer);
+                            }
+                        }, stepTime);
+                        
+                        observer.unobserve(statElement);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            document.querySelectorAll('[data-stat-target]').forEach(stat => {
+                statsObserver.observe(stat);
+            });
+
+            // --- CHART.JS VISUALIZATION ---
+            const ctx = document.getElementById('researchChart').getContext('2d');
+            
+            const chartData = {
+                datasets: [
+                    {
+                        label: 'AI in Education',
+                        data: publicationsData.filter(p => p.theme === 'AI in Education').map(p => ({x: p.year, y: 1})),
+                        backgroundColor: '#4A6C6F',
+                        pointRadius: 8,
+                        pointHoverRadius: 10,
+                    },
+                     {
+                        label: 'Technology-Enhanced Education (TEE)',
+                        data: publicationsData.filter(p => p.theme === 'TEE').map(p => ({x: p.year, y: 2})),
+                        backgroundColor: '#DAB88B',
+                        pointRadius: 8,
+                        pointHoverRadius: 10,
+
+                    },
+                    {
+                        label: 'Digital Heritage Tech',
+                        data: publicationsData.filter(p => p.theme === 'Heritage Tech').map(p => ({x: p.year, y: 3})),
+                        backgroundColor: 'rgba(74, 108, 111, 0.5)',
+                        pointRadius: 8,
+                        pointHoverRadius: 10,
+
+                    },
+                     {
+                        label: 'Game Development Tech',
+                        data: publicationsData.filter(p => p.theme === 'Game Tech').map(p => ({x: p.year, y: 4})),
+                         backgroundColor: 'rgba(218, 184, 139, 0.5)',
+                        pointRadius: 8,
+                        pointHoverRadius: 10,
+                    }
+                ]
+            };
+
+            new Chart(ctx, {
+                type: 'scatter',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    const dataPoint = publicationsData.find(p => p.year == context.raw.x && p.theme == context.dataset.label.replace(' (TEE)', ''));
+                                    return dataPoint ? [dataPoint.title, `(${dataPoint.citation})`] : 'Publication';
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Year of Publication'
+                            },
+                             min: 2013,
+                             max: 2026,
+                             ticks: {
+                                stepSize: 1
+                             }
+                        },
+                        y: {
+                            display: false,
+                             min: 0,
+                             max: 5,
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
